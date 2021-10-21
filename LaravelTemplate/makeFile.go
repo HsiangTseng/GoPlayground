@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -15,22 +16,42 @@ func check(e error) {
 }
 
 func main() {
-	writePHPFile("Member", "WEWQEQ")
+	var file_name string
+	fmt.Println("Please type in the file name :")
+	fmt.Scanf("%s", &file_name)
+
+	generateFile(file_name, "Controller")
+	generateFile(file_name, "Service")
+	generateFile(file_name, "Repository")
+	generateModel(file_name)
 }
 
-func writePHPFile(file_name, file_path string) {
+func generateFile(file_name, file_type string) {
 	// 讀模板檔，存在content
-	content, read_err := ioutil.ReadFile("controllerTemplate.txt")
+	template, read_err := ioutil.ReadFile("template/" + file_type + "Template.txt")
 	if read_err != nil {
 		log.Fatal(read_err)
 	}
 
-	// 在模板中找出要放入檔名的index，將模板改好再寫檔
-	file_name_byte := []byte(file_name)
-	file_name_index := strings.Index(string(content), " Controller") + 1                                                  // 取得要插入的位子
-	content_after_named := string(content)[:file_name_index] + string(file_name_byte) + string(content)[file_name_index:] //在要插入檔名的位子插入檔名
+	// 在模板中將檔名取代進去
+	file_content := strings.Replace(string(template), "{file_name}", file_name, -1)
 
-	fmt.Println(content_after_named)
+	// 設定輸出的檔案路徑並寫檔
+	file := filepath.Join("Output", file_name+file_type+".php")
+	os.WriteFile(file, []byte(file_content), 0755)
+}
 
-	os.WriteFile(string(file_name_byte)+"Controller.php", []byte(content_after_named), 0755) //寫檔
+func generateModel(file_name string) {
+	// 讀模板檔，存在content
+	template, read_err := ioutil.ReadFile("template/modelTemplate.txt")
+	if read_err != nil {
+		log.Fatal(read_err)
+	}
+
+	// 在模板中將檔名取代進去
+	file_content := strings.Replace(string(template), "{file_name}", file_name, -1)
+
+	// 設定輸出的檔案路徑並寫檔
+	file := filepath.Join("Output", file_name+".php")
+	os.WriteFile(file, []byte(file_content), 0755)
 }
