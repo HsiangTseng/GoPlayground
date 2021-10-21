@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use Ksd\Mediation\Core\Controller\RestLaravelController;
 
-class Controller extends RestLaravelController
+class {file_name}Controller extends RestLaravelController
 {
     public function __construct()
     {
